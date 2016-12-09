@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworld
+spec:
+  ports:
+  - port: 80
+    targetPort: 50051
+    name: http
+  selector:
+    app: helloworld
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: helloworld
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: helloworld
+    spec:
+      containers:
+      - name: helloworld
+        image: gcr.io/zlizan-dev/helloworld-grpc-server:2
+        ports:
+          - containerPort: 50051

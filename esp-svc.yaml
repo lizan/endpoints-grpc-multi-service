@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: esp
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    name: http
+  selector:
+    app: esp
+  type: LoadBalancer
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: esp
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: esp
+    spec:
+      volumes:
+      - name: nginxconf-volume
+        configMap:
+          name: nginxconf
+      containers:
+      - name: esp
+        image: b.gcr.io/endpoints/endpoints-runtime:1
+        args: [
+          "-s", "YOUR_SERVICE_NAME",
+          "-v", "YOUR_SERVICE_CONFIG_ID",
+          "-n", "/nginx/nginx.conf"
+        ]
+        volumeMounts:
+        - mountPath: /nginx
+          name: nginxconf-volume
+          readOnly: true
+        ports:
+          - containerPort: 8080

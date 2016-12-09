@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookstore
+spec:
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+  selector:
+    app: bookstore
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: bookstore
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: bookstore
+    spec:
+      containers:
+      - name: bookstore
+        image: gcr.io/endpointsv2/python-grpc-bookstore-server:1
+        ports:
+          - containerPort: 8000
